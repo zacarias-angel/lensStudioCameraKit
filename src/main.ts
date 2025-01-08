@@ -5,13 +5,13 @@ import { bootstrapCameraKit } from "@snap/camera-kit";
   })
   const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
 const session = await camerakit.createSession({liveRenderTarget});
-const meiaStream = await navigator.mediaDevices.getUserMedia({
+const mediaStream = await navigator.mediaDevices.getUserMedia({
   video:{
     facingMode:'user'
   }
 })
-await session.setSource(meiaStream);
+await session.setSource(mediaStream);
 await session.play();
 const lens = await camerakit.lensRepository.loadLens("fd13e5c0-c233-4dc1-b826-1a51eda48f51","8fa188a6-d070-4f7d-9fd0-154189e21dee")
   session.applyLens(lens)
-})
+})()
