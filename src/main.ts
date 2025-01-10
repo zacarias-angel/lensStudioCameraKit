@@ -1,34 +1,59 @@
-import { bootstrapCameraKit } from "@snap/camera-kit";
 
-(async function initializeCameraKit() {
-  try {
-    const camerakit = await bootstrapCameraKit({
-      apiToken: "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM2MzU3NDU1LCJzdWIiOiI1MTU2OGUxNi1mYWFjLTQ2M2MtYmQ2Yi1mMDUzZmVhYTY1MjR-U1RBR0lOR35lNmVlNGI5Ny03YWJiLTRlMTMtOTVlMi1jNGJlMmZlOThlZTEifQ.qRqpBtBlwgcarhSGpkMA9MYiqLspBAy8D2i2yJhGIWI"
-    });
+import { bootstrapCameraKit } from '@snap/camera-kit';
+// import { createMediaStreamSource, Transform2D } from '@snap/camera-kit';
+// (async function main() {
+//   const apiToken = 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM2MzkwMzc1LCJzdWIiOiI4MzU2YjM5Ni1mMTMyLTQ2MjItOTQwZi0zNWQ4ZTRlY2RiYmN-U1RBR0lOR35hZDg0OGMyNS0wNjQ2LTRmYTYtODQ4Yy04NWI5MGUyNzdhNzYifQ.ePlhaPrPCB18nWvg5MDkGJv4aj6yuJUzMMibI17xk5Q';
+//   const cameraKit = await bootstrapCameraKit({ apiToken });
+//   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+//   const session = await cameraKit.createSession({ liveRenderTarget: canvas }) ;
+//   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+//   const source = createMediaStreamSource(stream, {
+//   transform: Transform2D.MirrorX,
+//   cameraType: 'user',
+// });
+// await session.setSource(source);
+// const lens = await cameraKit.lensRepository.loadLens(
+//   '107e6c4f-b2f6-4795-9060-3d5f8e9171ac',
+//  'd4983d40-24a3-4a75-9928-4a207e79a27c'
+// )
+// await session.applyLens(lens);
 
-    const liveRenderTarget = document.getElementById("canvas") as HTMLCanvasElement;
-    if (!liveRenderTarget) {
-      throw new Error("Canvas element not found");
-    }
+// })();
 
-    const session = await camerakit.createSession({ liveRenderTarget });
-    const mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" },
-    });
-    await session.setSource(mediaStream);
-    await session.play();
 
-    const lens = await camerakit.lensRepository.loadLens(
-      "fd13e5c0-c233-4dc1-b826-1a51eda48f51",
-      "8fa188a6-d070-4f7d-9fd0-154189e21dee"
-    );
-    if (!lens) {
-      console.warn("Lens could not be loaded");
-      return;
-    }
+// Using an existing canvas
 
-    session.applyLens(lens);
-  } catch (error) {
-    console.error("An error occurred:", error);
-  }
+
+
+
+
+
+
+
+// // Let Camera Kit create a new canvas, then append it to the DOM
+// const canvasContainer = document.getElementById('canvas-container');
+// const session = await cameraKit.createSession();
+// canvasContainer.appendChild(session.output.live);
+
+(async function () {
+  const cameraKit = await bootstrapCameraKit({
+    apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM2MzkwMzc1LCJzdWIiOiI4MzU2YjM5Ni1mMTMyLTQ2MjItOTQwZi0zNWQ4ZTRlY2RiYmN-U1RBR0lOR35hZDg0OGMyNS0wNjQ2LTRmYTYtODQ4Yy04NWI5MGUyNzdhNzYifQ.ePlhaPrPCB18nWvg5MDkGJv4aj6yuJUzMMibI17xk5Q',
+  });
+  const liveRenderTarget = document.getElementById(
+    'canvas'
+  ) as HTMLCanvasElement;
+  const session = await cameraKit.createSession({ liveRenderTarget });
+  const mediaStream = await navigator.mediaDevices.getUserMedia({
+    video: true,
+  });
+
+  await session.setSource(mediaStream);
+  await session.play();
+
+  const lens = await cameraKit.lensRepository.loadLens(
+    '107e6c4f-b2f6-4795-9060-3d5f8e9171ac',
+    'd4983d40-24a3-4a75-9928-4a207e79a27c'
+  );
+
+  await session.applyLens(lens);
 })();
