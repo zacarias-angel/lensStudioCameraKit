@@ -44,8 +44,10 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
 
   // 1. Definimos la función de resize
   function resizeCanvas() {
-    liveRenderTarget.width = liveRenderTarget.clientWidth;
-    liveRenderTarget.height = liveRenderTarget.clientHeight;
+    const width = liveRenderTarget.clientWidth;
+    const height = (width / 9) * 16; // Mantener 9:16
+    liveRenderTarget.width = width;
+    liveRenderTarget.height = height;
   }
   
   // 2. Llamamos resizeCanvas() ANTES de iniciar sesión
@@ -79,35 +81,34 @@ resultSection.appendChild(shareButton);
 
 let finalImageDataUrl = '';
 
-captureButton.addEventListener('click', async function () {
-  const frame = document.getElementById('frame') as HTMLImageElement;
+captureButton.addEventListener('click', function () {
+  const imageData = canvas.toDataURL('image/png');
 
-  // Crear un nuevo canvas para combinar foto + marco
-  const outputCanvas = document.createElement('canvas');
-  const outputCtx = outputCanvas.getContext('2d')!;
+  const finalCanvas = document.createElement('canvas');
+  const ctx = finalCanvas.getContext('2d')!;
   
-  // Tamaño igual al del marco
-  outputCanvas.width = frame.naturalWidth;
-  outputCanvas.height = frame.naturalHeight;
+  finalCanvas.width = 1080; // ejemplo de tamaño final
+  finalCanvas.height = 1920; // 9:16
 
-  // Dibujar la foto capturada
   const photo = new Image();
-  photo.src = canvas.toDataURL('image/png');
+  photo.src = imageData;
+
+  const frame = new Image();
+  frame.src = '/frames/marco.webp';
 
   photo.onload = () => {
-    // Primero la foto
-    outputCtx.drawImage(photo, 0, 0, outputCanvas.width, outputCanvas.height);
-    // Después el marco encima
-    outputCtx.drawImage(frame, 0, 0, outputCanvas.width, outputCanvas.height);
+    ctx.drawImage(photo, 0, 0, finalCanvas.width, finalCanvas.height);
 
-    // Convertir a imagen final
-    finalImageDataUrl = outputCanvas.toDataURL('image/png');
-    capturedImage.src = finalImageDataUrl;
+    frame.onload = () => {
+      ctx.drawImage(frame, 0, 0, finalCanvas.width, finalCanvas.height);
 
-    // Ocultar cámara, mostrar resultado
-    canvasWrapper.style.display = 'none';
-    resultSection.style.display = 'flex';
-    shareButton.style.display = 'block'; // Mostrar botón de compartir
+      // Ahora tenés una imagen lista
+      const finalImage = finalCanvas.toDataURL('image/png');
+      capturedImage.src = finalImage;
+
+      canvasWrapper.style.display = 'none';
+      resultSection.style.display = 'flex';
+    };
   };
 });
 
