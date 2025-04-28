@@ -7,11 +7,11 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
 
   const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
   const captureButton = document.getElementById('captureBtn')!;
-  const resultSection = document.getElementById('result-section')!;
-  const capturedImage = document.getElementById('captured-image') as HTMLImageElement;
-  const canvasWrapper = document.getElementById('canvas-wrapper')!;
-  const shareButton = document.createElement('button');
-
+const shareButton = document.getElementById('shareBtn')!;
+const retryButton = document.getElementById('retryBtn')!;
+const resultSection = document.getElementById('result-section')!;
+const canvasWrapper = document.getElementById('canvas-wrapper')!;
+const capturedImage = document.getElementById('captured-image') as HTMLImageElement
   // Resize canvas dinámico
   function resizeCanvas() {
     const width = liveRenderTarget.clientWidth;
@@ -41,8 +41,8 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
 
   let finalImageDataUrl = '';
 
-  // Capturar foto
   captureButton.addEventListener('click', async () => {
+    // Capturamos y armamos la foto + marco
     const imageData = liveRenderTarget.toDataURL('image/png');
   
     const finalCanvas = document.createElement('canvas');
@@ -73,16 +73,9 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
   
     canvasWrapper.style.display = 'none';
     resultSection.style.display = 'flex';
-    shareButton.style.display = 'block';
-  
-    // 👉 Opcional: Scroll a resultado automáticamente
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  
-    // 👉 BLOQUEA el scroll general al capturar
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'; // Important!
   });
   
-  // Compartir
   shareButton.addEventListener('click', async () => {
     if (!finalImageDataUrl) return;
   
@@ -98,10 +91,16 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
           text: '¡Mirá esta foto!',
         });
       } else {
-        alert('Compartir no es soportado en este navegador.');
+        alert('Compartir no es soportado.');
       }
     } catch (error) {
       console.error('Error al compartir:', error);
     }
+  });
+  
+  retryButton.addEventListener('click', () => {
+    resultSection.style.display = 'none';
+    canvasWrapper.style.display = 'block';
+    document.body.style.overflow = 'hidden';
   });
 })();
