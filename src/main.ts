@@ -36,8 +36,8 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
   // Botón Compartir
   shareButton.textContent = '📤 Compartir Foto';
   shareButton.className = 'share-button';
-  // shareButton.style.display = 'none'; // oculto al principio
-  resultSection.appendChild(shareButton);
+ 
+  
 
   let finalImageDataUrl = '';
 
