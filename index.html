@@ -1,107 +1,88 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
-
+    <title>Foto con Marco</title>
     <style>
-      body {
+      * {
         margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #f0f0f0;
-  min-height: 100vh; /* <-- CAMBIAR height: 100vh por min-height */
-  overflow: hidden;
-}
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-#canvas-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 480px;
-  /* flex-grow: 1; */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: hidden;
-}
+      body {
+        font-family: sans-serif;
+        background: #000;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
 
-#canvas {
-  /* width: 100%; */
-  height: 100%; /* ocupa todo el espacio vertical disponible */
-  object-fit: cover;
-  background: black;
-  z-index: 1; /* <--- Agregamos esto */
-}
+      #canvas-wrapper {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: black;
+        position: relative;
+      }
 
-#captureBtn {
-  position: absolute;
-  bottom: 5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  max-width: 300px;
-  padding: 12px;
-  background-color: #007bff;
-  color: white;
-  font-size: 18px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 10000; /* Para estar encima del canvas */
-}
+      #canvas {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+      }
+
+      #captureBtn {
+        width: 90%;
+        max-width: 400px;
+        margin: 16px auto;
+        padding: 16px;
+        font-size: 20px;
+        background: #ff0066;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        display: block;
+      }
+
       #result-section {
-          position: relative;
-          width: 100%;
-          height: 100vh;
-          background: black;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          overflow: hidden;
-        }
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
 
-        #frame-container {
-          position: relative;
-          width: 90%;
-          max-width: 400px;
-          aspect-ratio: 9/16; /* Formato vertical típico */
-        }
+      #captured-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
 
-        #frame {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-          z-index: 2; /* Arriba del todo */
-        }
-
-        #captured-image {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          z-index: 1; /* Abajo del marco */
-          border-radius: 16px;
-        }
+      .share-button {
+        padding: 16px;
+        font-size: 18px;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
     </style>
-
   </head>
-
   <body>
     <div id="canvas-wrapper">
       <canvas id="canvas"></canvas>
-      <button id="captureBtn">📸 Capturar</button>
     </div>
-    <section id="result-section" style="display: none;">
-      <div id="frame-container">
-        <img id="frame" src="/frames/marco.webp" alt="Frame">
-        <img id="captured-image" alt="Captured Image">
-      </div>
-    </section>
+    <button id="captureBtn">📸 Capturar Foto</button>
+
+    <div id="result-section">
+      <img id="captured-image" alt="Foto Capturada" />
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
