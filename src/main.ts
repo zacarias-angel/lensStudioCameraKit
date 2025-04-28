@@ -74,6 +74,7 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
     canvasWrapper.style.display = 'none';
     resultSection.style.display = 'flex';
     document.body.style.overflow = 'hidden'; // Important!
+    shareButton.style.display = 'block';
   });
   
   shareButton.addEventListener('click', async () => {
