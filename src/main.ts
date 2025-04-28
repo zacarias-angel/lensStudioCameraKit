@@ -40,9 +40,16 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
   
     apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzQ1ODU0NDA3LCJzdWIiOiJkZWQ4NjMzMy04NTI3LTQwMWUtOTIyYi05MGM5NmMyOWU0OTF-U1RBR0lOR34wZWUzZmU3YS05NDE5LTRjOGItODhkZS0zNjMzYzdhZWQ0MGQifQ.wOlS9MrQnJRBO9vgmNK0kV09xG4cvMFspdjhErjqkmg',
   });
-  const liveRenderTarget = document.getElementById(
-    'canvas'
-  ) as HTMLCanvasElement;
+  const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
+
+  // 1. Definimos la función de resize
+  function resizeCanvas() {
+    liveRenderTarget.width = liveRenderTarget.clientWidth;
+    liveRenderTarget.height = liveRenderTarget.clientHeight;
+  }
+  
+  // 2. Llamamos resizeCanvas() ANTES de iniciar sesión
+  resizeCanvas();
   const session = await cameraKit.createSession({ liveRenderTarget });
   const mediaStream = await navigator.mediaDevices.getUserMedia({
     video: true,

@@ -8,43 +8,46 @@
 
     <style>
       body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        background: #f0f0f0;
-        min-height: 100vh;
-        margin: 0;
-        padding: 16px;
-      }
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f0f0f0;
+  height: 100vh;
+  overflow: hidden;
+}
 
-      #canvas {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
-      #canvas-container {
-        position: relative;
-        width: 100%;
-        height: 100vh; /* ocupa toda la altura del móvil */
-        overflow: hidden;
-      }
+#canvas-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  flex-grow: 1; /* que crezca hasta ocupar espacio */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
 
-      #captureBtn {
-        position: absolute;
-        bottom: 32px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #007bff;
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 50px;
-        font-size: 18px;
-        cursor: pointer;
-        z-index: 10; /* asegúrate que esté arriba */
-      }
+#canvas {
+  width: 100%;
+  flex-grow: 1; /* canvas toma todo el espacio disponible */
+  object-fit: cover;
+  background: black;
+}
+
+#captureBtn {
+  width: 80%;
+  max-width: 300px;
+  margin: 16px 0;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
       #result-section {
           position: relative;
           width: 100%;
@@ -84,7 +87,7 @@
   </head>
 
   <body>
-    <div id="canvas-container">
+    <div id="canvas-wrapper">
       <canvas id="canvas"></canvas>
       <button id="captureBtn">📸 Capturar</button>
     </div>
