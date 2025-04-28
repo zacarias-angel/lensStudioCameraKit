@@ -36,7 +36,7 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
   // Botón Compartir
   shareButton.textContent = '📤 Compartir Foto';
   shareButton.className = 'share-button';
-  shareButton.style.display = 'none'; // oculto al principio
+  // shareButton.style.display = 'none'; // oculto al principio
   resultSection.appendChild(shareButton);
 
   let finalImageDataUrl = '';
@@ -74,7 +74,7 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
     canvasWrapper.style.display = 'none';
     resultSection.style.display = 'flex';
     document.body.style.overflow = 'hidden'; // Important!
-    shareButton.style.display = 'block';
+   
   });
   
   shareButton.addEventListener('click', async () => {
