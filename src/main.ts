@@ -44,58 +44,64 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
   // Capturar foto
   captureButton.addEventListener('click', async () => {
     const imageData = liveRenderTarget.toDataURL('image/png');
-
+  
     const finalCanvas = document.createElement('canvas');
     const ctx = finalCanvas.getContext('2d')!;
     finalCanvas.width = 1080;
     finalCanvas.height = 1920;
-
+  
     const photo = new Image();
     const frame = new Image();
-
+  
     const loadImage = (img: HTMLImageElement, src: string) => {
       return new Promise<void>((resolve) => {
         img.onload = () => resolve();
         img.src = src;
       });
     };
-
+  
     await Promise.all([
       loadImage(photo, imageData),
-      loadImage(frame, '/frames/marco.webp') // Tu marco debe estar en /public/frames/marco.webp
+      loadImage(frame, '/frames/marco.webp')
     ]);
-
+  
     ctx.drawImage(photo, 0, 0, finalCanvas.width, finalCanvas.height);
     ctx.drawImage(frame, 0, 0, finalCanvas.width, finalCanvas.height);
-
+  
     finalImageDataUrl = finalCanvas.toDataURL('image/png');
     capturedImage.src = finalImageDataUrl;
-
+  
     canvasWrapper.style.display = 'none';
     resultSection.style.display = 'flex';
     shareButton.style.display = 'block';
+  
+    // 👉 Opcional: Scroll a resultado automáticamente
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+    // 👉 BLOQUEA el scroll general al capturar
+    document.body.style.overflow = 'hidden';
   });
-
-  // Compartir imagen
+  
+  // Compartir
   shareButton.addEventListener('click', async () => {
     if (!finalImageDataUrl) return;
-
-    if (navigator.canShare && navigator.canShare({ files: [] })) {
-      try {
-        const res = await fetch(finalImageDataUrl);
-        const blob = await res.blob();
-        const file = new File([blob], 'foto-con-marco.png', { type: 'image/png' });
-
+  
+    try {
+      const res = await fetch(finalImageDataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], 'foto-con-marco.png', { type: 'image/png' });
+  
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
           title: 'Mi foto con marco',
           text: '¡Mirá esta foto!',
         });
-      } catch (error) {
-        console.error('Error al compartir:', error);
+      } else {
+        alert('Compartir no es soportado en este navegador.');
       }
-    } else {
-      console.log('Compartir no soportado en este navegador.');
+    } catch (error) {
+      console.error('Error al compartir:', error);
     }
   });
 })();
