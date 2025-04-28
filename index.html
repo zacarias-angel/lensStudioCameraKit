@@ -5,9 +5,48 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + TS</title>
+
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        background: #f0f0f0;
+        min-height: 100vh;
+        margin: 0;
+        padding: 16px;
+      }
+
+      #canvas {
+        width: 100%;
+        max-width: 400px; /* Limita a tamaño de móvil */
+        height: 700px; /* Altura tipo teléfono */
+        background: black;
+        border-radius: 16px;
+        display: block;
+        margin-bottom: 16px;
+      }
+
+      #captureBtn {
+        width: 80%;
+        max-width: 300px;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+    </style>
+
   </head>
+
   <body>
-   <canvas id="canvas" ></canvas>
+    <canvas id="canvas"></canvas>
+    <button id="captureBtn">📸 Capturar Foto</button>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

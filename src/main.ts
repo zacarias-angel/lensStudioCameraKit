@@ -50,6 +50,19 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
 
   await session.setSource(mediaStream);
   await session.play();
+  const captureButton = document.getElementById('captureBtn')!; // <- el "!" dice "confía en mí, no es null"
+  const canvas = document.getElementById('canvas') as HTMLCanvasElement; // <- "as HTMLCanvasElement" para que conozca .toDataURL()
+  
+  captureButton.addEventListener('click', function () {
+    const image = canvas.toDataURL('image/png'); // ahora no da error
+  
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = 'captura.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
 
   const lens = await cameraKit.lensRepository.loadLens(
      'f0c4c183-eabc-4ddd-bbeb-10cae4734b52','c2e781a8-be7f-48b9-b7e1-bf02923ab16d'
