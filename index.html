@@ -22,7 +22,7 @@
   position: relative;
   width: 100%;
   max-width: 480px;
-  flex-grow: 1; /* que crezca hasta ocupar espacio */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,15 +31,18 @@
 
 #canvas {
   width: 100%;
-  flex-grow: 1; /* canvas toma todo el espacio disponible */
+  height: 100%; /* ocupa todo el espacio vertical disponible */
   object-fit: cover;
   background: black;
 }
 
 #captureBtn {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 80%;
   max-width: 300px;
-  margin: 16px 0;
   padding: 12px;
   background-color: #007bff;
   color: white;
@@ -47,6 +50,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  z-index: 10; /* Para estar encima del canvas */
 }
       #result-section {
           position: relative;
