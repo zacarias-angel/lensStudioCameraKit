@@ -42,12 +42,12 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
   let finalImageDataUrl = '';
 
   captureButton.addEventListener('click', async () => {
-  // 🔴 Enviar mensaje al Lens para ocultar elementos
-  if ((session as any).sendMessage) {
-  (session as any).sendMessage({ action: 'hideUI' });
-} else {
-  console.warn('sendMessage no está disponible en este contexto.');
-}
+  const baseUrl = window.location.href.split('?')[0];
+  const newUrl = baseUrl + '?hideUI=true';
+  window.history.replaceState({}, '', newUrl); // modifica la URL sin recargar
+
+  // Esperar un poco a que Lens lea el nuevo param
+  await new Promise(resolve => setTimeout(resolve, 300));
 
   // ⏱️ Esperar 300 ms para que el Lens tenga tiempo de ocultar
   await new Promise(resolve => setTimeout(resolve, 300));
