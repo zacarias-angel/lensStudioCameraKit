@@ -42,40 +42,47 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
   let finalImageDataUrl = '';
 
   captureButton.addEventListener('click', async () => {
-    // Capturamos y armamos la foto + marco
-    const imageData = liveRenderTarget.toDataURL('image/png');
-  
-    const finalCanvas = document.createElement('canvas');
-    const ctx = finalCanvas.getContext('2d')!;
-    finalCanvas.width = 1080;
-    finalCanvas.height = 1920;
-  
-    const photo = new Image();
-    const frame = new Image();
-  
-    const loadImage = (img: HTMLImageElement, src: string) => {
-      return new Promise<void>((resolve) => {
-        img.onload = () => resolve();
-        img.src = src;
-      });
-    };
-  
-    await Promise.all([
-      loadImage(photo, imageData),
-      loadImage(frame, '/frames/marco.webp')
-    ]);
-  
-    ctx.drawImage(photo, 0, 0, finalCanvas.width, finalCanvas.height);
-    ctx.drawImage(frame, 0, 0, finalCanvas.width, finalCanvas.height);
-  
-    finalImageDataUrl = finalCanvas.toDataURL('image/png');
-    capturedImage.src = finalImageDataUrl;
-  
-    canvasWrapper.style.display = 'none';
-    resultSection.style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Important!
-   
-  });
+  // 🔴 Enviar mensaje al Lens para ocultar elementos
+  (session as any).sendMessage({
+  action: 'hideUI'
+});
+
+  // ⏱️ Esperar 300 ms para que el Lens tenga tiempo de ocultar
+  await new Promise(resolve => setTimeout(resolve, 300));
+
+  // 📸 Capturar imagen y aplicar marco
+  const imageData = liveRenderTarget.toDataURL('image/png');
+
+  const finalCanvas = document.createElement('canvas');
+  const ctx = finalCanvas.getContext('2d')!;
+  finalCanvas.width = 1080;
+  finalCanvas.height = 1920;
+
+  const photo = new Image();
+  const frame = new Image();
+
+  const loadImage = (img: HTMLImageElement, src: string) => {
+    return new Promise<void>((resolve) => {
+      img.onload = () => resolve();
+      img.src = src;
+    });
+  };
+
+  await Promise.all([
+    loadImage(photo, imageData),
+    loadImage(frame, '/frames/marco.webp')
+  ]);
+
+  ctx.drawImage(photo, 0, 0, finalCanvas.width, finalCanvas.height);
+  ctx.drawImage(frame, 0, 0, finalCanvas.width, finalCanvas.height);
+
+  finalImageDataUrl = finalCanvas.toDataURL('image/png');
+  capturedImage.src = finalImageDataUrl;
+
+  canvasWrapper.style.display = 'none';
+  resultSection.style.display = 'flex';
+  document.body.style.overflow = 'hidden'; // Important!
+});
   
   shareButton.addEventListener('click', async () => {
     if (!finalImageDataUrl) return;
