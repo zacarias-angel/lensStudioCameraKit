@@ -43,9 +43,11 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
 
   captureButton.addEventListener('click', async () => {
   // 🔴 Enviar mensaje al Lens para ocultar elementos
-  (session as any).sendMessage({
-  action: 'hideUI'
-});
+  if ((session as any).sendMessage) {
+  (session as any).sendMessage({ action: 'hideUI' });
+} else {
+  console.warn('sendMessage no está disponible en este contexto.');
+}
 
   // ⏱️ Esperar 300 ms para que el Lens tenga tiempo de ocultar
   await new Promise(resolve => setTimeout(resolve, 300));
