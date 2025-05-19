@@ -54,8 +54,7 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
 
   // 📸 Capturar imagen y aplicar marco
   // const imageData = liveRenderTarget.toDataURL('image/png');
-const imageData = session.output.capture.toDataURL('image/png');
-
+const imageData = session.output.capture.toDataURL('image/png')
   const finalCanvas = document.createElement('canvas');
   const ctx = finalCanvas.getContext('2d')!;
   finalCanvas.width = 1080;
