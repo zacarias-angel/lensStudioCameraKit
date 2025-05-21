@@ -39,97 +39,98 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
 
 
 
-  let finalImageDataUrl = '';
 
 
   captureButton.addEventListener('click', async () => {
   await new Promise(resolve => setTimeout(resolve, 300));
-
   const imageData = liveRenderTarget.toDataURL('image/png');
 
-  // Crear canvas con tamaño dinámico (según el canvas original)
   const finalCanvas = document.createElement('canvas');
-  finalCanvas.width = liveRenderTarget.width;
-  finalCanvas.height = liveRenderTarget.height;
-  const ctx = finalCanvas.getContext('2d')!;
+  finalCanvas.width = 1080;
+  finalCanvas.height = 1920;
+  const ctx = finalCanvas.getContext('2d');
+if (!ctx) {
+  console.error('No se pudo obtener el contexto del canvas.');
+  return;
+}
 
   const photo = new Image();
   const frame = new Image();
 
-  const loadImage = (img: HTMLImageElement, src: string) => {
-    return new Promise<void>((resolve) => {
-      img.onload = () => resolve();
-      img.src = src;
-    });
-  };
+  const loadImage = (img: HTMLImageElement, src: string) => new Promise<void>(resolve => {
+    img.onload = () => resolve();
+    img.src = src;
+  });
 
   await Promise.all([
     loadImage(photo, imageData),
-    loadImage(frame, '/frames/marco.webp') // Asegurate que este archivo esté accesible
+    loadImage(frame, '/frames/marco.webp')
   ]);
 
-  // Dibujar la foto original
-  ctx.drawImage(photo, 0, 0, finalCanvas.width, finalCanvas.height);
+  // 👉 Recortar la foto como "cover" (centrada y ajustada)
+  const aspectRatioCanvas = finalCanvas.width / finalCanvas.height;
+  const aspectRatioPhoto = photo.width / photo.height;
+  let sx = 0, sy = 0, sw = photo.width, sh = photo.height;
 
-  // Dibujar el marco centrado, ocupando 80% del ancho
+  if (aspectRatioPhoto > aspectRatioCanvas) {
+    sw = photo.height * aspectRatioCanvas;
+    sx = (photo.width - sw) / 2;
+  } else {
+    sh = photo.width / aspectRatioCanvas;
+    sy = (photo.height - sh) / 2;
+  }
+
+  ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, finalCanvas.width, finalCanvas.height);
+
+  // 👉 Dibujar el marco centrado
   const marcoAncho = finalCanvas.width * 0.8;
-  const marcoAlto = marcoAncho * (frame.height / frame.width); // proporción original del marco
+  const marcoAlto = marcoAncho * (frame.height / frame.width);
   const marcoX = (finalCanvas.width - marcoAncho) / 2;
   const marcoY = (finalCanvas.height - marcoAlto) / 2;
   ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
 
-  // Convertir imagen final a base64
-  finalImageDataUrl = finalCanvas.toDataURL('image/png');
+  const finalImageDataUrl = finalCanvas.toDataURL('image/png');
 
-  // Mostrar el resultado en el DOM
+  // 👉 Mostrar resultado
   canvasWrapper.style.display = 'none';
   resultSection.innerHTML = `
-    <div style="background-color: #333; color: white; width: 100%; min-height: 100vh; padding: 2rem 1rem; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;">
-      <h2 style="margin: 0 0 0.5rem 0; font-weight: bold; font-size: 20px;">LOGO OR BRANDS</h2>
-      <p style="margin: 0 0 1rem 0; text-align: center; font-size: 1.2rem; line-height: 1.4;">
+    <div style="background-color:#222; color:white; width:100%; height:100vh; max-height:100vh; overflow-y:auto; display:flex; flex-direction:column; align-items:center; padding:1.5rem 1rem; box-sizing:border-box;">
+      <h2 style="margin:0; font-weight:bold; font-size:18px;">LOGO OR BRANDS</h2>
+      <p style="margin:0.5rem 0 1rem 0; text-align:center; font-size:1.1rem;">
         LOREM IPSUM<br/>LOREM LOREEM
       </p>
-
-      <div style="background-color: #eee; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-        <img id="captured-image" src="${finalImageDataUrl}" style="width: 300px; max-width: 100%; border: 4px solid white; border-radius: 4px;" />
+      <div style="background-color:#eee; padding:1rem; border-radius:8px;">
+        <img src="${finalImageDataUrl}" style="width:300px; max-width:100%; border-radius:6px;" />
       </div>
-
-      <div style="display: flex; gap: 1rem; flex-direction: column; width: 80%; max-width: 300px;">
-        <button id="shareBtn" style="padding: 0.75rem; font-size: 16px; border: none; border-radius: 20px; background-color: white; color: #333;">SHARE</button>
-        <button id="retryBtn" style="padding: 0.75rem; font-size: 16px; border: none; border-radius: 20px; background-color: white; color: #333;">TRY AGAIN</button>
+      <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1.5rem; width:100%; max-width:300px;">
+        <button id="shareBtn" style="padding:0.75rem; font-size:16px; border:none; border-radius:20px; background-color:white; color:#222;">SHARE</button>
+        <button id="retryBtn" style="padding:0.75rem; font-size:16px; border:none; border-radius:20px; background-color:white; color:#222;">TRY AGAIN</button>
       </div>
+      <div style="height:40px;"></div> <!-- espacio para que no se corten los botones -->
     </div>
   `;
   resultSection.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
-  // Reasignar botones (ya que los reemplazamos con innerHTML)
-  document.getElementById('retryBtn')!.addEventListener('click', () => {
+  // Reasignar eventos a botones
+  const shareBtn = document.getElementById('shareBtn');
+if (shareBtn) {
+  shareBtn.addEventListener('click', async () => {
+    // tu lógica de compartir
+  });
+}
+
+const retryBtn = document.getElementById('retryBtn');
+if (retryBtn) {
+  retryBtn.addEventListener('click', () => {
     resultSection.style.display = 'none';
     canvasWrapper.style.display = 'block';
     document.body.style.overflow = 'hidden';
   });
+}
 
-  document.getElementById('shareBtn')!.addEventListener('click', async () => {
-    if (!finalImageDataUrl) return;
-    try {
-      const res = await fetch(finalImageDataUrl);
-      const blob = await res.blob();
-      const file = new File([blob], 'foto-con-marco.png', { type: 'image/png' });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: 'Mi foto con marco',
-          text: '¡Mirá esta foto!',
-        });
-      } else {
-        alert('Compartir no es soportado.');
-      }
-    } catch (error) {
-      console.error('Error al compartir:', error);
-    }
-  });
+ 
 });
+
 
 })();
