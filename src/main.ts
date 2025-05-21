@@ -7,11 +7,11 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
 
   const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
   const captureButton = document.getElementById('captureBtn')!;
-const shareButton = document.getElementById('shareBtn')!;
-const retryButton = document.getElementById('retryBtn')!;
-const resultSection = document.getElementById('result-section')!;
-const canvasWrapper = document.getElementById('canvas-wrapper')!;
-const capturedImage = document.getElementById('captured-image') as HTMLImageElement
+  const shareButton = document.getElementById('shareBtn')!;
+  // const retryButton = document.getElementById('retryBtn')!;
+  const resultSection = document.getElementById('result-section')!;
+  const canvasWrapper = document.getElementById('canvas-wrapper')!;
+  // const capturedImage = document.getElementById('captured-image') as HTMLImageElement
   // Resize canvas dinámico
   function resizeCanvas() {
     const width = liveRenderTarget.clientWidth;
@@ -36,26 +36,23 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
   // Botón Compartir
   shareButton.textContent = '📤 Compartir Foto';
   shareButton.className = 'share-button';
- 
-  
+
+
 
   let finalImageDataUrl = '';
 
 
   captureButton.addEventListener('click', async () => {
-  // ⏱️ Esperar un poco (por si el Lens necesita actualizar)
   await new Promise(resolve => setTimeout(resolve, 300));
 
-  // 📸 Capturar imagen desde el canvas de preview
   const imageData = liveRenderTarget.toDataURL('image/png');
 
-  // Crear canvas con dimensiones dinámicas
+  // Crear canvas con tamaño dinámico (según el canvas original)
   const finalCanvas = document.createElement('canvas');
   finalCanvas.width = liveRenderTarget.width;
   finalCanvas.height = liveRenderTarget.height;
   const ctx = finalCanvas.getContext('2d')!;
 
-  // Cargar imagen capturada y marco
   const photo = new Image();
   const frame = new Image();
 
@@ -68,39 +65,45 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
 
   await Promise.all([
     loadImage(photo, imageData),
-    loadImage(frame, '/frames/marco.webp')
+    loadImage(frame, '/frames/marco.webp') // Asegurate que este archivo esté accesible
   ]);
 
-  // Dibujar la imagen de fondo
+  // Dibujar la foto original
   ctx.drawImage(photo, 0, 0, finalCanvas.width, finalCanvas.height);
 
-  // 🔲 Dibujar el marco centrado (por ejemplo, que ocupe 80% del ancho)
+  // Dibujar el marco centrado, ocupando 80% del ancho
   const marcoAncho = finalCanvas.width * 0.8;
-  const marcoAlto = marcoAncho * (frame.height / frame.width); // mantener proporción
+  const marcoAlto = marcoAncho * (frame.height / frame.width); // proporción original del marco
   const marcoX = (finalCanvas.width - marcoAncho) / 2;
   const marcoY = (finalCanvas.height - marcoAlto) / 2;
   ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
 
-  // Guardar imagen final
+  // Convertir imagen final a base64
   finalImageDataUrl = finalCanvas.toDataURL('image/png');
-  capturedImage.src = finalImageDataUrl;
 
-  // Mostrar resultado y ocultar cámara
+  // Mostrar el resultado en el DOM
   canvasWrapper.style.display = 'none';
   resultSection.innerHTML = `
-    <div style="text-align:center; padding: 1rem;">
-      <p style="margin: 0 0 1rem 0; font-size: 18px;">📄 Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-      <img id="captured-image" src="${finalImageDataUrl}" style="max-width: 100%; border-radius: 8px;" />
-      <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem;">
-  <button id="retryBtn" style="padding: 0.5rem 1rem; font-size: 16px;">🔁 Volver a Tomar</button>
-  <button id="shareBtn" style="padding: 0.5rem 1rem; font-size: 16px;">📤 Compartir Foto</button>
-</div>
+    <div style="background-color: #333; color: white; width: 100%; min-height: 100vh; padding: 2rem 1rem; display: flex; flex-direction: column; align-items: center; box-sizing: border-box;">
+      <h2 style="margin: 0 0 0.5rem 0; font-weight: bold; font-size: 20px;">LOGO OR BRANDS</h2>
+      <p style="margin: 0 0 1rem 0; text-align: center; font-size: 1.2rem; line-height: 1.4;">
+        LOREM IPSUM<br/>LOREM LOREEM
+      </p>
+
+      <div style="background-color: #eee; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+        <img id="captured-image" src="${finalImageDataUrl}" style="width: 300px; max-width: 100%; border: 4px solid white; border-radius: 4px;" />
+      </div>
+
+      <div style="display: flex; gap: 1rem; flex-direction: column; width: 80%; max-width: 300px;">
+        <button id="shareBtn" style="padding: 0.75rem; font-size: 16px; border: none; border-radius: 20px; background-color: white; color: #333;">SHARE</button>
+        <button id="retryBtn" style="padding: 0.75rem; font-size: 16px; border: none; border-radius: 20px; background-color: white; color: #333;">TRY AGAIN</button>
+      </div>
     </div>
   `;
   resultSection.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
-  // Reasignar botones porque los reemplazamos con innerHTML
+  // Reasignar botones (ya que los reemplazamos con innerHTML)
   document.getElementById('retryBtn')!.addEventListener('click', () => {
     resultSection.style.display = 'none';
     canvasWrapper.style.display = 'block';
@@ -129,9 +132,4 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
   });
 });
 
-  retryButton.addEventListener('click', () => {
-    resultSection.style.display = 'none';
-    canvasWrapper.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-  });
 })();
