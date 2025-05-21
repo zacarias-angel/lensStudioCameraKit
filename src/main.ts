@@ -41,27 +41,21 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
 
   let finalImageDataUrl = '';
 
-  
+
   captureButton.addEventListener('click', async () => {
-  // const baseUrl = window.location.href.split('?')[0];
-  // const newUrl = baseUrl + '?hideUI=true';
-  // window.history.replaceState({}, '', newUrl); // modifica la URL sin recargar
-  // // cameraKit.sendCommand('hideButtons', { value: true });
-  // // session.
-  // // Esperar un poco a que Lens lea el nuevo param
+  // ⏱️ Esperar un poco (por si el Lens necesita actualizar)
   await new Promise(resolve => setTimeout(resolve, 300));
 
-  // ⏱️ Esperar 300 ms para que el Lens tenga tiempo de ocultar
-  await new Promise(resolve => setTimeout(resolve, 300));
-
-  // 📸 Capturar imagen y aplicar marco
+  // 📸 Capturar imagen desde el canvas de preview
   const imageData = liveRenderTarget.toDataURL('image/png');
-  // const imageData = session.output.capture.toDataURL('image/png')
-  const finalCanvas = document.createElement('canvas');
-  const ctx = finalCanvas.getContext('2d')!;
-  finalCanvas.width = 1080;
-  finalCanvas.height = 1920;
 
+  // Crear canvas con dimensiones dinámicas
+  const finalCanvas = document.createElement('canvas');
+  finalCanvas.width = liveRenderTarget.width;
+  finalCanvas.height = liveRenderTarget.height;
+  const ctx = finalCanvas.getContext('2d')!;
+
+  // Cargar imagen capturada y marco
   const photo = new Image();
   const frame = new Image();
 
@@ -77,25 +71,49 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
     loadImage(frame, '/frames/marco.webp')
   ]);
 
+  // Dibujar la imagen de fondo
   ctx.drawImage(photo, 0, 0, finalCanvas.width, finalCanvas.height);
-  ctx.drawImage(frame, 0, 0, finalCanvas.width, finalCanvas.height);
 
+  // 🔲 Dibujar el marco centrado (por ejemplo, que ocupe 80% del ancho)
+  const marcoAncho = finalCanvas.width * 0.8;
+  const marcoAlto = marcoAncho * (frame.height / frame.width); // mantener proporción
+  const marcoX = (finalCanvas.width - marcoAncho) / 2;
+  const marcoY = (finalCanvas.height - marcoAlto) / 2;
+  ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
+
+  // Guardar imagen final
   finalImageDataUrl = finalCanvas.toDataURL('image/png');
   capturedImage.src = finalImageDataUrl;
 
+  // Mostrar resultado y ocultar cámara
   canvasWrapper.style.display = 'none';
+  resultSection.innerHTML = `
+    <div style="text-align:center; padding: 1rem;">
+      <p style="margin: 0 0 1rem 0; font-size: 18px;">📄 Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <img id="captured-image" src="${finalImageDataUrl}" style="max-width: 100%; border-radius: 8px;" />
+      <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem;">
+  <button id="retryBtn" style="padding: 0.5rem 1rem; font-size: 16px;">🔁 Volver a Tomar</button>
+  <button id="shareBtn" style="padding: 0.5rem 1rem; font-size: 16px;">📤 Compartir Foto</button>
+</div>
+    </div>
+  `;
   resultSection.style.display = 'flex';
-  document.body.style.overflow = 'hidden'; // Important!
-});
-  
-  shareButton.addEventListener('click', async () => {
+  document.body.style.overflow = 'hidden';
+
+  // Reasignar botones porque los reemplazamos con innerHTML
+  document.getElementById('retryBtn')!.addEventListener('click', () => {
+    resultSection.style.display = 'none';
+    canvasWrapper.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  });
+
+  document.getElementById('shareBtn')!.addEventListener('click', async () => {
     if (!finalImageDataUrl) return;
-  
     try {
       const res = await fetch(finalImageDataUrl);
       const blob = await res.blob();
       const file = new File([blob], 'foto-con-marco.png', { type: 'image/png' });
-  
+
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
@@ -109,7 +127,8 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
       console.error('Error al compartir:', error);
     }
   });
-  
+});
+
   retryButton.addEventListener('click', () => {
     resultSection.style.display = 'none';
     canvasWrapper.style.display = 'block';
