@@ -41,20 +41,22 @@ const capturedImage = document.getElementById('captured-image') as HTMLImageElem
 
   let finalImageDataUrl = '';
 
+  
   captureButton.addEventListener('click', async () => {
-  const baseUrl = window.location.href.split('?')[0];
-  const newUrl = baseUrl + '?hideUI=true';
-  window.history.replaceState({}, '', newUrl); // modifica la URL sin recargar
-
-  // Esperar un poco a que Lens lea el nuevo param
+  // const baseUrl = window.location.href.split('?')[0];
+  // const newUrl = baseUrl + '?hideUI=true';
+  // window.history.replaceState({}, '', newUrl); // modifica la URL sin recargar
+  // // cameraKit.sendCommand('hideButtons', { value: true });
+  // // session.
+  // // Esperar un poco a que Lens lea el nuevo param
   await new Promise(resolve => setTimeout(resolve, 300));
 
   // ⏱️ Esperar 300 ms para que el Lens tenga tiempo de ocultar
   await new Promise(resolve => setTimeout(resolve, 300));
 
   // 📸 Capturar imagen y aplicar marco
-  // const imageData = liveRenderTarget.toDataURL('image/png');
-const imageData = session.output.capture.toDataURL('image/png')
+  const imageData = liveRenderTarget.toDataURL('image/png');
+  // const imageData = session.output.capture.toDataURL('image/png')
   const finalCanvas = document.createElement('canvas');
   const ctx = finalCanvas.getContext('2d')!;
   finalCanvas.width = 1080;
