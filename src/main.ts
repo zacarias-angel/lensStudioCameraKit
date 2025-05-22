@@ -7,15 +7,13 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
 
   const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
   const captureButton = document.getElementById('captureBtn')!;
-  const shareButton = document.getElementById('shareBtn')!;
-  // const retryButton = document.getElementById('retryBtn')!;
+  //  const retryBtn = document.getElementById('shareBtn')!;
   const resultSection = document.getElementById('result-section')!;
   const canvasWrapper = document.getElementById('canvas-wrapper')!;
-  // const capturedImage = document.getElementById('captured-image') as HTMLImageElement
-  // Resize canvas dinámico
+
   function resizeCanvas() {
     const width = liveRenderTarget.clientWidth;
-    const height = (width / 9) * 16; // Mantener 9:16
+    const height = (width / 9) * 16;
     liveRenderTarget.width = width;
     liveRenderTarget.height = height;
   }
@@ -33,142 +31,106 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
   );
   await session.applyLens(lens);
 
-  // Botón Compartir
-  shareButton.textContent = '📤 Compartir Foto';
-  shareButton.className = 'share-button';
-
-
-
-
-
   captureButton.addEventListener('click', async () => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  const imageData = liveRenderTarget.toDataURL('image/png');
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const imageData = liveRenderTarget.toDataURL('image/png');
 
-  const finalCanvas = document.createElement('canvas');
-  finalCanvas.width = 1080;
-  finalCanvas.height = 1920;
-  const ctx = finalCanvas.getContext('2d');
-if (!ctx) {
-  console.error('No se pudo obtener el contexto del canvas.');
-  return;
-}
+    const finalCanvas = document.createElement('canvas');
+    finalCanvas.width = 1080;
+    finalCanvas.height = 1920;
+    const ctx = finalCanvas.getContext('2d');
+    if (!ctx) return;
 
-  const photo = new Image();
-  const frame = new Image();
+    const photo = new Image();
+    const frame = new Image();
 
-  const loadImage = (img: HTMLImageElement, src: string) => new Promise<void>(resolve => {
-    img.onload = () => resolve();
-    img.src = src;
-  });
+    const loadImage = (img: HTMLImageElement, src: string) => new Promise<void>(resolve => {
+      img.onload = () => resolve();
+      img.src = src;
+    });
 
-  await Promise.all([
-    loadImage(photo, imageData),
-    loadImage(frame, '/frames/marco.webp')
-  ]);
+    await Promise.all([
+      loadImage(photo, imageData),
+      loadImage(frame, '/frames/marco.webp')
+    ]);
 
-  // 👉 Recortar la foto como "cover" (centrada y ajustada)
-  const aspectRatioCanvas = finalCanvas.width / finalCanvas.height;
-  const aspectRatioPhoto = photo.width / photo.height;
-  let sx = 0, sy = 0, sw = photo.width, sh = photo.height;
+    // ✂️ Ajuste estilo "cover"
+    const aspectCanvas = finalCanvas.width / finalCanvas.height;
+    const aspectPhoto = photo.width / photo.height;
 
-  if (aspectRatioPhoto > aspectRatioCanvas) {
-    sw = photo.height * aspectRatioCanvas;
-    sx = (photo.width - sw) / 2;
-  } else {
-    sh = photo.width / aspectRatioCanvas;
-    sy = (photo.height - sh) / 2;
-  }
+    let sx = 0, sy = 0, sw = photo.width, sh = photo.height;
 
- const marcoX = 0;
-const marcoY = 0;
-const marcoAncho = finalCanvas.width;
-const marcoAlto = finalCanvas.height;
-
-// 👉 Ahora dibujar la foto **dentro** del marco
-const marcoRatio = marcoAncho / marcoAlto;
-const photoRatio = sw / sh;
-let drawSX = sx, drawSY = sy, drawSW = sw, drawSH = sh;
-
-if (photoRatio > marcoRatio) {
-  drawSW = sh * marcoRatio;
-  drawSX = sx + (sw - drawSW) / 2;
-} else {
-  drawSH = sw / marcoRatio;
-  drawSY = sy + (sh - drawSH) / 2;
-}
-
-ctx.fillStyle = "#000";
-ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-
-ctx.drawImage(photo, drawSX, drawSY, drawSW, drawSH, marcoX, marcoY, marcoAncho, marcoAlto);
-ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
-
-  const finalImageDataUrl = finalCanvas.toDataURL('image/png');
-
-  // 👉 Mostrar resultado
-  canvasWrapper.style.display = 'none';
-resultSection.innerHTML = `
-  <div style="background-color:#2b2b2b; color:white; width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1rem; box-sizing:border-box;">
-    
-    <!-- Texto superior -->
-    <div style="text-align:center; margin-bottom:1rem;">
-      <div style="font-weight:bold; font-size:1rem;">LOGO OR BRANDS</div>
-      <div style="font-size:0.9rem;">LOREM IPSUM<br/>LOREM LOREEM</div>
-    </div>
-
-    <!-- Contenedor de imagen con botones -->
-    <div id="result-container" style="position:relative; width:100%; max-width:360px;">
-      <img src="${finalImageDataUrl}" style="width:100%; display:block;" />
-      
-      <!-- Botones sobre la imagen -->
-      <div style="position:absolute; top:12px; left:0; right:0; display:flex; justify-content:space-around; padding:0 1rem; z-index:10;">
-        <button id="finalShareBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:20px; background:#fff; color:#222;">SHARE</button>
-        <button id="retryBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:20px; background:#fff; color:#222;">TRY AGAIN</button>
-      </div>
-    </div>
-  </div>
-`;
-resultSection.style.display = 'flex';
-document.body.style.overflow = 'hidden';
-
-const finalShareBtn = document.getElementById('finalShareBtn');
-if (finalShareBtn) {
-  finalShareBtn.addEventListener('click', async () => {
-    try {
-      const response = await fetch(finalImageDataUrl);
-      const blob = await response.blob();
-      const file = new File([blob], 'foto.png', {
-        type: 'image/png',
-        lastModified: Date.now()
-      });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: 'Mi Foto',
-          text: '¡Mirá mi foto!',
-          files: [file]
-        });
-      } else {
-        alert('Tu navegador no permite compartir archivos.');
-      }
-    } catch (err) {
-      console.error('Error al compartir:', err);
-      alert('Ocurrió un error al compartir la foto.');
+    if (aspectPhoto > aspectCanvas) {
+      sw = photo.height * aspectCanvas;
+      sx = (photo.width - sw) / 2;
+    } else {
+      sh = photo.width / aspectCanvas;
+      sy = (photo.height - sh) / 2;
     }
-  });
-}
 
-const retryBtn = document.getElementById('retryBtn');
-if (retryBtn) {
-  retryBtn.addEventListener('click', () => {
-    resultSection.style.display = 'none';
-    canvasWrapper.style.display = 'block';
+    ctx.fillStyle = "#000"; // 👈 evita bordes blancos
+    ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+    ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, finalCanvas.width, finalCanvas.height);
+    ctx.drawImage(frame, 0, 0, finalCanvas.width, finalCanvas.height);
+
+    const finalImageDataUrl = finalCanvas.toDataURL('image/png');
+
+    // ✅ Mostrar resultado (más chico, pero sin modificar el canvas real)
+    canvasWrapper.style.display = 'none';
+    resultSection.innerHTML = `
+      <div style="background-color:#2b2b2b; color:white; width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1rem; box-sizing:border-box;">
+
+        <!-- Texto superior -->
+        <div style="text-align:center; margin-bottom:1rem;">
+          <div style="font-weight:bold; font-size:1rem;">LOGO OR BRANDS</div>
+          <div style="font-size:0.9rem;">LOREM IPSUM<br/>LOREM LOREEM</div>
+        </div>
+
+        <!-- Contenedor imagen final reducida -->
+        <div style="position:relative; width:100%; max-width:340px;">
+          <img src="${finalImageDataUrl}" style="width:100%; display:block;" />
+
+          <!-- Botones al pie (sobre imagen) -->
+          <div style="position:absolute; bottom:16px; left:0; right:0; display:flex; justify-content:space-around; padding:0 1rem; z-index:10;">
+            <button id="finalShareBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:20px; background:#fff; color:#222;">SHARE</button>
+            <button id="retryBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:20px; background:#fff; color:#222;">TRY AGAIN</button>
+          </div>
+        </div>
+      </div>
+    `;
+    resultSection.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+
+    const finalShareBtn = document.getElementById('finalShareBtn');
+    finalShareBtn?.addEventListener('click', async () => {
+      try {
+        const response = await fetch(finalImageDataUrl);
+        const blob = await response.blob();
+        const file = new File([blob], 'foto.png', {
+          type: 'image/png',
+          lastModified: Date.now(),
+        });
+
+        if (navigator.canShare?.({ files: [file] })) {
+          await navigator.share({
+            title: 'Mi Foto',
+            text: '¡Mirá mi foto!',
+            files: [file],
+          });
+        } else {
+          alert('Tu navegador no permite compartir archivos.');
+        }
+      } catch (err) {
+        console.error('Error al compartir:', err);
+        alert('Ocurrió un error al compartir la foto.');
+      }
+    });
+
+    const retryBtn = document.getElementById('retryBtn');
+    retryBtn?.addEventListener('click', () => {
+      resultSection.style.display = 'none';
+      canvasWrapper.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    });
   });
-}
- 
-});
-
-
 })();
