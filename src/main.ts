@@ -80,21 +80,24 @@ if (!ctx) {
     sy = (photo.height - sh) / 2;
   }
 
-  ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, finalCanvas.width, finalCanvas.height);
-
-  // 👉 Dibujar el marco centrado
   const marcoAncho = finalCanvas.width * 0.8;
-  const marcoAlto = marcoAncho * (frame.height / frame.width);
-  const marcoX = (finalCanvas.width - marcoAncho) / 2;
-  const marcoY = (finalCanvas.height - marcoAlto) / 2;
-  ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
+const marcoAlto = marcoAncho * (frame.height / frame.width);
+const marcoX = (finalCanvas.width - marcoAncho) / 2;
+const marcoY = (finalCanvas.height - marcoAlto) / 2;
+
+// 👉 Ahora dibujar la foto **dentro** del marco
+ctx.drawImage(photo, sx, sy, sw, sh, marcoX, marcoY, marcoAncho, marcoAlto);
+
+// 👉 Luego el marco encima
+ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
 
   const finalImageDataUrl = finalCanvas.toDataURL('image/png');
 
   // 👉 Mostrar resultado
   canvasWrapper.style.display = 'none';
   resultSection.innerHTML = `
-    <div style="background-color:#222; color:white; width:100%; height:100vh; max-height:100vh; overflow-y:auto; display:flex; flex-direction:column; align-items:center; padding:1.5rem 1rem; box-sizing:border-box;">
+    <div style="background-color:#222; color:white; width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1.5rem 1rem; box-sizing:border-box;">
+
       <h2 style="margin:0; font-weight:bold; font-size:18px;">LOGO OR BRANDS</h2>
       <p style="margin:0.5rem 0 1rem 0; text-align:center; font-size:1.1rem;">
         LOREM IPSUM<br/>LOREM LOREEM
@@ -106,7 +109,7 @@ if (!ctx) {
         <button id="shareBtn" style="padding:0.75rem; font-size:16px; border:none; border-radius:20px; background-color:white; color:#222;">SHARE</button>
         <button id="retryBtn" style="padding:0.75rem; font-size:16px; border:none; border-radius:20px; background-color:white; color:#222;">TRY AGAIN</button>
       </div>
-      <div style="height:40px;"></div> <!-- espacio para que no se corten los botones -->
+      
     </div>
   `;
   resultSection.style.display = 'flex';
@@ -125,7 +128,7 @@ if (retryBtn) {
   retryBtn.addEventListener('click', () => {
     resultSection.style.display = 'none';
     canvasWrapper.style.display = 'block';
-    document.body.style.overflow = 'hidden';
+   document.body.style.overflow = 'auto';
   });
 }
 
