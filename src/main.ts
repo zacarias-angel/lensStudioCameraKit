@@ -109,12 +109,22 @@ ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
   // 👉 Mostrar resultado
   canvasWrapper.style.display = 'none';
 resultSection.innerHTML = `
-  <div style="background-color:#000; color:white; width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0; box-sizing:border-box;">
+  <div style="background-color:#2b2b2b; color:white; width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1rem; box-sizing:border-box;">
+    
+    <!-- Texto superior -->
+    <div style="text-align:center; margin-bottom:1rem;">
+      <div style="font-weight:bold; font-size:1rem;">LOGO OR BRANDS</div>
+      <div style="font-size:0.9rem;">LOREM IPSUM<br/>LOREM LOREEM</div>
+    </div>
+
+    <!-- Contenedor de imagen con botones -->
     <div id="result-container" style="position:relative; width:100%; max-width:360px;">
       <img src="${finalImageDataUrl}" style="width:100%; display:block;" />
-      <div style="position:absolute; top:12px; left:0; right:0; display:flex; justify-content:space-between; padding:0 1rem; z-index:10;">
-        <button id="finalShareBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:16px; background:#fff; color:#222;">Compartir</button>
-        <button id="retryBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:16px; background:#fff; color:#222;">Reintentar</button>
+      
+      <!-- Botones sobre la imagen -->
+      <div style="position:absolute; top:12px; left:0; right:0; display:flex; justify-content:space-around; padding:0 1rem; z-index:10;">
+        <button id="finalShareBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:20px; background:#fff; color:#222;">SHARE</button>
+        <button id="retryBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:20px; background:#fff; color:#222;">TRY AGAIN</button>
       </div>
     </div>
   </div>
@@ -149,7 +159,6 @@ if (finalShareBtn) {
   });
 }
 
-// Evento botón reintentar
 const retryBtn = document.getElementById('retryBtn');
 if (retryBtn) {
   retryBtn.addEventListener('click', () => {
