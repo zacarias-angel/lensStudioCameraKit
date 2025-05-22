@@ -80,13 +80,29 @@ if (!ctx) {
     sy = (photo.height - sh) / 2;
   }
 
-  const marcoAncho = finalCanvas.width * 0.8;
+ const marcoAncho = finalCanvas.width * 0.9; // antes 0.8
+
 const marcoAlto = marcoAncho * (frame.height / frame.width);
 const marcoX = (finalCanvas.width - marcoAncho) / 2;
 const marcoY = (finalCanvas.height - marcoAlto) / 2;
 
 // 👉 Ahora dibujar la foto **dentro** del marco
-ctx.drawImage(photo, sx, sy, sw, sh, marcoX, marcoY, marcoAncho, marcoAlto);
+ctx.drawImage(photo, sx, sy, sw, sh, marcoX, marcoY, marcoAncho, marcoAlto);// Calcular relación de aspecto del marco
+const marcoRatio = marcoAncho / marcoAlto;
+const photoRatio = sw / sh;
+let drawSX = sx, drawSY = sy, drawSW = sw, drawSH = sh;
+
+if (photoRatio > marcoRatio) {
+  // Foto más ancha que marco
+  drawSW = sh * marcoRatio;
+  drawSX = sx + (sw - drawSW) / 2;
+} else {
+  // Foto más alta que marco
+  drawSH = sw / marcoRatio;
+  drawSY = sy + (sh - drawSH) / 2;
+}
+
+ctx.drawImage(photo, drawSX, drawSY, drawSW, drawSH, marcoX, marcoY, marcoAncho, marcoAlto);
 
 // 👉 Luego el marco encima
 ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
@@ -96,7 +112,8 @@ ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
   // 👉 Mostrar resultado
   canvasWrapper.style.display = 'none';
   resultSection.innerHTML = `
-    <div style="background-color:#222; color:white; width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1.5rem 1rem; box-sizing:border-box;">
+   <div style="background-color:#222; color:white; width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:1.5rem 1rem; box-sizing:border-box;">
+
 
       <h2 style="margin:0; font-weight:bold; font-size:18px;">LOGO OR BRANDS</h2>
       <p style="margin:0.5rem 0 1rem 0; text-align:center; font-size:1.1rem;">
@@ -106,7 +123,7 @@ ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
         <img src="${finalImageDataUrl}" style="width:300px; max-width:100%; border-radius:6px;" />
       </div>
       <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1.5rem; width:100%; max-width:300px;">
-        <button id="shareBtn" style="padding:0.75rem; font-size:16px; border:none; border-radius:20px; background-color:white; color:#222;">SHARE</button>
+        <button id="finalShareBtn" style="padding:0.75rem; font-size:16px; border:none; border-radius:20px; background-color:white; color:#222;">SHARE</button>
         <button id="retryBtn" style="padding:0.75rem; font-size:16px; border:none; border-radius:20px; background-color:white; color:#222;">TRY AGAIN</button>
       </div>
       
@@ -116,10 +133,32 @@ ctx.drawImage(frame, marcoX, marcoY, marcoAncho, marcoAlto);
   document.body.style.overflow = 'hidden';
 
   // Reasignar eventos a botones
-  const shareBtn = document.getElementById('shareBtn');
-if (shareBtn) {
-  shareBtn.addEventListener('click', async () => {
-    // tu lógica de compartir
+ const finalShareBtn = document.getElementById('finalShareBtn');
+if (finalShareBtn) {
+  finalShareBtn.addEventListener('click', async () => {
+    try {
+      const response = await fetch(finalImageDataUrl);
+      const blob = await response.blob();
+      const file = new File([blob], 'foto.png', {
+        type: 'image/png',
+        lastModified: Date.now()
+      });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: 'Mi Foto',
+          text: '¡Mirá mi foto!',
+          files: [file]
+        });
+        console.log('Foto compartida exitosamente.');
+      } else {
+        alert('Tu navegador no soporta la función de compartir archivos.');
+        console.warn('No se puede compartir: navegador incompatible.');
+      }
+    } catch (err) {
+      console.error('Error al intentar compartir:', err);
+      alert('Ocurrió un error al intentar compartir la foto.');
+    }
   });
 }
 
