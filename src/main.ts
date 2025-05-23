@@ -8,6 +8,14 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
   const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
   const captureButton = document.getElementById('captureBtn')!;
   //  const retryBtn = document.getElementById('shareBtn')!;
+  const introScreen = document.getElementById('intro-screen')!;
+const startButton = document.getElementById('startBtn')!;
+captureButton.style.display = 'none';
+
+startButton.addEventListener('click', () => {
+  introScreen.style.display = 'none';
+  captureButton.style.display = 'block';
+});
   const resultSection = document.getElementById('result-section')!;
   const canvasWrapper = document.getElementById('canvas-wrapper')!;
 

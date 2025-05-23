@@ -60,6 +60,31 @@
     
   </head>
   <body>
+    <div id="intro-screen" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: url('/public/frames/FWC.png') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+">
+  <button id="startBtn" style="
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 30px;
+    background-color: white;
+    color: #333;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  ">
+    Comenzar
+  </button>
+</div>
     <div id="canvas-wrapper">
       <canvas id="canvas"></canvas>
       <button id="captureBtn">📸 Capturar Foto</button>
