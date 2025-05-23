@@ -6,6 +6,7 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
   });
 
   const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
+  liveRenderTarget.style.transform = 'scaleX(-1)';
   const captureButton = document.getElementById('captureBtn')!;
   //  const retryBtn = document.getElementById('shareBtn')!;
   const introScreen = document.getElementById('intro-screen')!;
