@@ -6,29 +6,35 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
   });
 
   const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
-  // liveRenderTarget.style.transform = 'scaleX(-1)';
-  const captureButton = document.getElementById('captureBtn')!;
-  //  const retryBtn = document.getElementById('shareBtn')!;
-  const introScreen = document.getElementById('intro-screen')!;
-const startButton = document.getElementById('startBtn')!;
-captureButton.style.display = 'none';
+  const captureButton = document.getElementById('captureBtn');
+  const introScreen = document.getElementById('intro-screen');
+  const startButton = document.getElementById('startBtn');
+  const canvasWrapper = document.getElementById('canvas-wrapper');
+  const resultSection = document.getElementById('result-section');
 
-startButton.addEventListener('click', () => {
-  introScreen.style.display = 'none';
-  captureButton.style.display = 'block';
-});
-  const resultSection = document.getElementById('result-section')!;
-  const canvasWrapper = document.getElementById('canvas-wrapper')!;
+  if (!liveRenderTarget || !captureButton || !introScreen || !startButton || !canvasWrapper || !resultSection) {
+    console.error('Faltan elementos del DOM.');
+    return;
+  }
 
- function resizeCanvas() {
-  const wrapperWidth = canvasWrapper.clientWidth;
-  const wrapperHeight = canvasWrapper.clientHeight;
+  captureButton.style.display = 'none';
 
-  liveRenderTarget.width = wrapperWidth;
-  liveRenderTarget.height = wrapperHeight;
-}
-  resizeCanvas();
+  startButton.addEventListener('click', () => {
+    introScreen.style.display = 'none';
+    captureButton.style.display = 'block';
+  });
+
+  function resizeCanvas() {
+    if (canvasWrapper && liveRenderTarget) {
+      const width = canvasWrapper.clientWidth;
+      const height = canvasWrapper.clientHeight;
+      liveRenderTarget.width = width;
+      liveRenderTarget.height = height;
+    }
+  }
+
   window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
 
   const session = await cameraKit.createSession({ liveRenderTarget });
   const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -64,7 +70,7 @@ startButton.addEventListener('click', () => {
       loadImage(frame, '/frames/marco.webp')
     ]);
 
-    // ✂️ Ajuste estilo "cover"
+    // Estilo "cover"
     const aspectCanvas = finalCanvas.width / finalCanvas.height;
     const aspectPhoto = photo.width / photo.height;
 
@@ -78,29 +84,24 @@ startButton.addEventListener('click', () => {
       sy = (photo.height - sh) / 2;
     }
 
-    ctx.fillStyle = "#000"; // 👈 evita bordes blancos
+    ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, finalCanvas.width, finalCanvas.height);
     ctx.drawImage(frame, 0, 0, finalCanvas.width, finalCanvas.height);
 
     const finalImageDataUrl = finalCanvas.toDataURL('image/png');
 
-    // ✅ Mostrar resultado (más chico, pero sin modificar el canvas real)
+    // Mostrar resultado
     canvasWrapper.style.display = 'none';
     resultSection.innerHTML = `
       <div style="background-color:#2b2b2b; color:white; width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1rem; box-sizing:border-box;">
-
-        <!-- Texto superior -->
         <div style="text-align:center; margin-bottom:1rem;">
           <div style="font-weight:bold; font-size:1rem;">LOGO OR BRANDS</div>
           <div style="font-size:0.9rem;">LOREM IPSUM<br/>LOREM LOREEM</div>
         </div>
 
-        <!-- Contenedor imagen final reducida -->
         <div style="position:relative; width:100%; max-width:340px;">
           <img src="${finalImageDataUrl}" style="width:100%; display:block;" />
-
-          <!-- Botones al pie (sobre imagen) -->
           <div style="position:absolute; bottom:16px; left:0; right:0; display:flex; justify-content:space-around; padding:0 1rem; z-index:10;">
             <button id="finalShareBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:20px; background:#fff; color:#222;">SHARE</button>
             <button id="retryBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:20px; background:#fff; color:#222;">TRY AGAIN</button>
