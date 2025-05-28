@@ -21,13 +21,13 @@ startButton.addEventListener('click', () => {
   const canvasWrapper = document.getElementById('canvas-wrapper')!;
 
  function resizeCanvas() {
-  const wrapperWidth = canvasWrapper.clientWidth;
-  const aspectRatio = 9 / 16;
+  // const wrapperWidth = canvasWrapper.clientWidth;
+  // const aspectRatio = 9 / 16;
 
-  const calculatedHeight = wrapperWidth / aspectRatio;
+  // const calculatedHeight = wrapperWidth / aspectRatio;
 
-  liveRenderTarget.style.width = wrapperWidth + 'px';
-  liveRenderTarget.style.height = calculatedHeight + 'px';
+  // liveRenderTarget.style.width = wrapperWidth + 'px';
+  // liveRenderTarget.style.height = calculatedHeight + 'px';
 
   liveRenderTarget.width = 1240;   // Resolución interna
   liveRenderTarget.height = 960;
