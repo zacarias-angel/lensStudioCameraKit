@@ -12,7 +12,7 @@
         height: 100%;
         background-color: #000;
       }
-      #canvas-wrapper, #result-section {
+     #result-section {
         position: relative;
         width: 100vw;
         height: 100vh;
@@ -91,8 +91,8 @@
     Comenzar
   </button>
 </div>
-    <div id="canvas-wrapper">
-      <canvas id="canvas" width="auto" height="auto"></canvas>
+    <div id="canvas-wrapper" style="position:relative; width:100%; aspect-ratio:9/16;">
+      <canvas id="canvas" style="width:100%; height:100%; display:block;"></canvas>
       <button id="captureBtn">📸 Capturar Foto</button>
     </div>
   
