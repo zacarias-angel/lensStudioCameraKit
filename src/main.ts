@@ -21,16 +21,23 @@ startButton.addEventListener('click', () => {
   const canvasWrapper = document.getElementById('canvas-wrapper')!;
 
  function resizeCanvas() {
-  // const wrapperWidth = canvasWrapper.clientWidth;
-  // const aspectRatio = 9 / 16;
+  const aspectRatio = 9 / 16;
+  const wrapperWidth = canvasWrapper.clientWidth;
+  const wrapperHeight = canvasWrapper.clientHeight;
 
-  // const calculatedHeight = wrapperWidth / aspectRatio;
+  let width = wrapperWidth;
+  let height = wrapperWidth / aspectRatio;
 
-  // liveRenderTarget.style.width = wrapperWidth + 'px';
-  // liveRenderTarget.style.height = calculatedHeight + 'px';
+  if (height > wrapperHeight) {
+    height = wrapperHeight;
+    width = height * aspectRatio;
+  }
 
-  liveRenderTarget.width = 1240;   // Resolución interna
+  liveRenderTarget.width = 1240; // resolución interna, la mantenés
   liveRenderTarget.height = 960;
+
+  liveRenderTarget.style.width = `${width}px`;
+  liveRenderTarget.style.height = `${height}px`;
 }
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
