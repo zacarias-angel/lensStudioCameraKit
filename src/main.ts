@@ -25,12 +25,14 @@ import { bootstrapCameraKit } from '@snap/camera-kit';
   });
 
   function resizeCanvas() {
-    if (canvasWrapper && liveRenderTarget) {
-      const width = canvasWrapper.clientWidth;
-      const height = canvasWrapper.clientHeight;
-      liveRenderTarget.width = width;
-      liveRenderTarget.height = height;
-    }
+    // if (canvasWrapper && liveRenderTarget) {
+    //   const width = canvasWrapper.clientWidth;
+    //   const height = canvasWrapper.clientHeight;
+    //   liveRenderTarget.width = width;
+    //   liveRenderTarget.height = height;
+    // }
+    liveRenderTarget.width = 1080;
+    liveRenderTarget.height = 1920;
   }
 
   window.addEventListener('resize', resizeCanvas);
