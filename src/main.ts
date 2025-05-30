@@ -50,7 +50,7 @@ startButton.addEventListener('click', () => {
     
     session.keyboard.sendInputToLens("1");
 
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 600));
     const imageData = liveRenderTarget.toDataURL('image/png');
 
     const finalCanvas = document.createElement('canvas');
