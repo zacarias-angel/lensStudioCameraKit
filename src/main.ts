@@ -47,6 +47,9 @@ startButton.addEventListener('click', () => {
   await session.applyLens(lens);
 
   captureButton.addEventListener('click', async () => {
+    
+    session.keyboard.sendInputToLens("1");
+
     await new Promise(resolve => setTimeout(resolve, 300));
     const imageData = liveRenderTarget.toDataURL('image/png');
 
