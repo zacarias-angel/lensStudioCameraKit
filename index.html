@@ -87,6 +87,15 @@
   justify-content: center;
   background: black;
 }
+
+#canvas {
+  position: absolute;
+  z-index: 1;
+}
+
+#captureBtn {
+  z-index: 2; /* asegúrate que esté encima del canvas */
+}
     </style>
     
   </head>
@@ -117,7 +126,7 @@
   </button>
 </div>
     <div id="canvas-wrapper" style="position: relative; width: 100vw; height: 100vh; overflow: hidden;">
-  <canvas id="canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"></canvas>
+  <canvas id="canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;"></canvas>
   <button id="captureBtn">📸 Capturar Foto</button>
 </div>
   
