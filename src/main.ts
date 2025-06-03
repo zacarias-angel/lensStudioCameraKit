@@ -28,17 +28,23 @@ const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
     disableSourceAudio: false,
   });
  function resizeCanvas() {
-  // const wrapperWidth = canvasWrapper.clientWidth;
-  // const aspectRatio = 9 / 16;
+    const aspectRatio = 9 / 16;
+    const width = window.innerWidth;
+    const height = width / aspectRatio;
 
-  // const calculatedHeight = wrapperWidth / aspectRatio;
+    // Canvas interno (rendering)
+    liveRenderTarget.width = width;
+    liveRenderTarget.height = height;
 
-  // liveRenderTarget.style.width = wrapperWidth + 'px';
-  // liveRenderTarget.style.height = calculatedHeight + 'px';
+    // Canvas visual (estilo)
+    liveRenderTarget.style.width = `${width}px`;
+    liveRenderTarget.style.height = `${height}px`;
+    liveRenderTarget.style.aspectRatio = 'unset'; // Para evitar conflictos CSS
 
-  liveRenderTarget.width = 1080;   // Resolución interna
-  liveRenderTarget.height = 1920;
-}
+    // Render Size para el source de Camera Kit
+    source.setRenderSize(width, height);
+  }
+
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
