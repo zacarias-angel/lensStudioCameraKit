@@ -22,14 +22,25 @@
         background: black;
         overflow: hidden;
       }
-         #canvas {
+          /* #canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+            object-fit: cover;
+            max-width: 100%;
+            max-height: 100%;
+          }#canvas {
   width: 100%;
   height: auto;
-  display: block;
   object-fit: cover;
-         }
-      
-      /* #captureBtn {
+} */
+         #captured-image {
+        width: 100%;
+        height: auto;
+        max-height: 100%;
+        object-fit: cover;
+      }
+      #captureBtn {
         position: absolute;
         bottom: 20px;
         left: 50%;
@@ -41,21 +52,7 @@
         border: none;
         border-radius: 24px;
         cursor: pointer;
-      } */
-      #captureBtn {
-  position: absolute;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  padding: 12px 24px;
-  font-size: 18px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 24px;
-  cursor: pointer;
-}
+      }
       #result-buttons {
         position: absolute;
         bottom: 20px;
@@ -76,26 +73,6 @@
       #retryBtn {
         background-color: #dc3545; /* Rojo para "volver a tomar" */
       }
-
-      #canvas-wrapper {
-  position: relative; /* 👈 Necesario para posicionar el botón respecto al canvas */
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: black;
-}
-
-#canvas {
-  position: absolute;
-  z-index: 1;
-}
-
-#captureBtn {
-  z-index: 2; /* asegúrate que esté encima del canvas */
-}
     </style>
     
   </head>
@@ -125,10 +102,10 @@
     Comenzar
   </button>
 </div>
-    <div id="canvas-wrapper" style="position: relative; width: 100vw; height: 100vh; overflow: hidden;">
-  <canvas id="canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;"></canvas>
-  <button id="captureBtn">📸 Capturar Foto</button>
-</div>
+    <div id="canvas-wrapper" style="height: auto;" >
+      <canvas id="canvas"></canvas>
+      <button id="captureBtn">📸 Capturar Foto</button>
+    </div>
   
     <div id="result-section" style="display: none;">
       <img id="captured-image" style="max-width: 100%; height: 100%; object-fit: cover;" />
