@@ -1,4 +1,4 @@
-import { bootstrapCameraKit,createMediaStreamSource } from '@snap/camera-kit';
+import { bootstrapCameraKit,createMediaStreamSource, Transform2D } from '@snap/camera-kit';
 
 (async function () {
   const cameraKit = await bootstrapCameraKit({
@@ -50,6 +50,7 @@ const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
 
    const session = await cameraKit.createSession({ liveRenderTarget });
   await session.setSource(source);
+    source.setTransform(Transform2D.MirrorX)
   await source.setRenderSize(window.innerWidth, window.innerHeight);
   await session.play();
 
