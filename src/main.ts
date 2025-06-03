@@ -1,46 +1,59 @@
-import { bootstrapCameraKit } from '@snap/camera-kit';
+import { bootstrapCameraKit,createMediaStreamSource, Transform2D } from '@snap/camera-kit';
 
 (async function () {
   const cameraKit = await bootstrapCameraKit({
     apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzQ1ODU0NDA3LCJzdWIiOiJkZWQ4NjMzMy04NTI3LTQwMWUtOTIyYi05MGM5NmMyOWU0OTF-U1RBR0lOR34wZWUzZmU3YS05NDE5LTRjOGItODhkZS0zNjMzYzdhZWQ0MGQifQ.wOlS9MrQnJRBO9vgmNK0kV09xG4cvMFspdjhErjqkmg', // 👈 poné tu token real
   });
 
-  const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
-  // liveRenderTarget.style.transform = 'scaleX(-1)';
+ const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
   const captureButton = document.getElementById('captureBtn')!;
-  //  const retryBtn = document.getElementById('shareBtn')!;
   const introScreen = document.getElementById('intro-screen')!;
-const startButton = document.getElementById('startBtn')!;
-captureButton.style.display = 'none';
-
-startButton.addEventListener('click', () => {
-  introScreen.style.display = 'none';
-  captureButton.style.display = 'block';
-});
+  const startButton = document.getElementById('startBtn')!;
   const resultSection = document.getElementById('result-section')!;
   const canvasWrapper = document.getElementById('canvas-wrapper')!;
 
- function resizeCanvas() {
-  // const wrapperWidth = canvasWrapper.clientWidth;
-  // const aspectRatio = 9 / 16;
+  captureButton.style.display = 'none';
 
-  // const calculatedHeight = wrapperWidth / aspectRatio;
+  startButton.addEventListener('click', () => {
+    introScreen.style.display = 'none';
+    captureButton.style.display = 'block';
+  });
 
-  // liveRenderTarget.style.width = wrapperWidth + 'px';
-  // liveRenderTarget.style.height = calculatedHeight + 'px';
+  const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
 
-  liveRenderTarget.width = 1080;   // Resolución interna
-  liveRenderTarget.height = 1920;
-}
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
+  // Creamos el source correctamente
+  const source = createMediaStreamSource(mediaStream, {
+    cameraType: 'user',
+    disableSourceAudio: false,
+  });
+
+  source.setTransform(Transform2D.MirrorX);
 
   const session = await cameraKit.createSession({ liveRenderTarget });
-  const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
-  await session.setSource(mediaStream, {
-    cameraType: "user"
-  });
+  await session.setSource(source);
   await session.play();
+
+  // 📐 Redimensionamiento correcto del canvas
+  function resizeCanvas() {
+    const aspectRatio = 9 / 16;
+    const width = window.innerWidth;
+    const height = width / aspectRatio;
+
+    // Canvas interno (rendering)
+    liveRenderTarget.width = width;
+    liveRenderTarget.height = height;
+
+    // Canvas visual (estilo)
+    liveRenderTarget.style.width = `${width}px`;
+    liveRenderTarget.style.height = `${height}px`;
+    liveRenderTarget.style.aspectRatio = 'unset'; // Para evitar conflictos CSS
+
+    // Render Size para el source de Camera Kit
+    source.setRenderSize(width, height);
+  }
+
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
   const lens = await cameraKit.lensRepository.loadLens(
     'f0c4c183-eabc-4ddd-bbeb-10cae4734b52',
@@ -49,10 +62,9 @@ startButton.addEventListener('click', () => {
   await session.applyLens(lens);
 
   captureButton.addEventListener('click', async () => {
-    
     session.keyboard.sendInputToLens("1");
-
     await new Promise(resolve => setTimeout(resolve, 600));
+
     const imageData = liveRenderTarget.toDataURL('image/png');
 
     const finalCanvas = document.createElement('canvas');
@@ -74,7 +86,6 @@ startButton.addEventListener('click', () => {
       loadImage(frame, '/frames/marco.webp')
     ]);
 
-    // ✂️ Ajuste estilo "cover"
     const aspectCanvas = finalCanvas.width / finalCanvas.height;
     const aspectPhoto = photo.width / photo.height;
 
@@ -88,29 +99,23 @@ startButton.addEventListener('click', () => {
       sy = (photo.height - sh) / 2;
     }
 
-    ctx.fillStyle = "#000"; // 👈 evita bordes blancos
+    ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, finalCanvas.width, finalCanvas.height);
     ctx.drawImage(frame, 0, 0, finalCanvas.width, finalCanvas.height);
 
     const finalImageDataUrl = finalCanvas.toDataURL('image/png');
 
-    // ✅ Mostrar resultado (más chico, pero sin modificar el canvas real)
+    // UI final
     canvasWrapper.style.display = 'none';
     resultSection.innerHTML = `
       <div style="background-color:#2b2b2b; color:white; width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1rem; box-sizing:border-box;">
-
-        <!-- Texto superior -->
         <div style="text-align:center; margin-bottom:1rem;">
           <div style="font-weight:bold; font-size:1rem;">LOGO OR BRANDS</div>
           <div style="font-size:0.9rem;">LOREM IPSUM<br/>LOREM LOREEM</div>
         </div>
-
-        <!-- Contenedor imagen final reducida -->
         <div style="position:relative; width:100%; max-width:340px;">
           <img src="${finalImageDataUrl}" style="width:100%; display:block;" />
-
-          <!-- Botones al pie (sobre imagen) -->
           <div style="position:absolute; bottom:16px; left:0; right:0; display:flex; justify-content:space-around; padding:0 1rem; z-index:10;">
             <button id="finalShareBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:20px; background:#fff; color:#222;">SHARE</button>
             <button id="retryBtn" style="padding:0.5rem 1rem; font-size:14px; border:none; border-radius:20px; background:#fff; color:#222;">TRY AGAIN</button>
@@ -126,10 +131,7 @@ startButton.addEventListener('click', () => {
       try {
         const response = await fetch(finalImageDataUrl);
         const blob = await response.blob();
-        const file = new File([blob], 'foto.png', {
-          type: 'image/png',
-          lastModified: Date.now(),
-        });
+        const file = new File([blob], 'foto.png', { type: 'image/png', lastModified: Date.now() });
 
         if (navigator.canShare?.({ files: [file] })) {
           await navigator.share({
