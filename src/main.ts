@@ -20,24 +20,26 @@ startButton.addEventListener('click', () => {
   const resultSection = document.getElementById('result-section')!;
   const canvasWrapper = document.getElementById('canvas-wrapper')!;
 
-//  function resizeCanvas() {
-//   const wrapperWidth = canvasWrapper.clientWidth;
-//   const aspectRatio = 9 / 16;
+ function resizeCanvas() {
+  // const wrapperWidth = canvasWrapper.clientWidth;
+  // const aspectRatio = 9 / 16;
 
-//   const calculatedHeight = wrapperWidth / aspectRatio;
+  // const calculatedHeight = wrapperWidth / aspectRatio;
 
-//   liveRenderTarget.style.width = wrapperWidth + 'px';
-//   liveRenderTarget.style.height = calculatedHeight + 'px';
+  // liveRenderTarget.style.width = wrapperWidth + 'px';
+  // liveRenderTarget.style.height = calculatedHeight + 'px';
 
-//   liveRenderTarget.width = 1080;   // Resolución interna
-//   liveRenderTarget.height = 1920;
-// }
-//   resizeCanvas();
-//   window.addEventListener('resize', resizeCanvas);
+  liveRenderTarget.width = 1080;   // Resolución interna
+  liveRenderTarget.height = 1920;
+}
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
   const session = await cameraKit.createSession({ liveRenderTarget });
   const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
-  await session.setSource(mediaStream);
+  await session.setSource(mediaStream, {
+    cameraType: "user"
+  });
   await session.play();
 
   const lens = await cameraKit.lensRepository.loadLens(
