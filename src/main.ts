@@ -1,4 +1,4 @@
-import { bootstrapCameraKit,createMediaStreamSource, Transform2D } from '@snap/camera-kit';
+import { bootstrapCameraKit,createMediaStreamSource } from '@snap/camera-kit';
 
 (async function () {
   const cameraKit = await bootstrapCameraKit({
@@ -20,6 +20,13 @@ startButton.addEventListener('click', () => {
   const resultSection = document.getElementById('result-section')!;
   const canvasWrapper = document.getElementById('canvas-wrapper')!;
 
+const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+  // Creamos el source correctamente
+  const source = createMediaStreamSource(mediaStream, {
+    cameraType: 'user',
+    disableSourceAudio: false,
+  });
  function resizeCanvas() {
   // const wrapperWidth = canvasWrapper.clientWidth;
   // const aspectRatio = 9 / 16;
@@ -35,12 +42,8 @@ startButton.addEventListener('click', () => {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  const session = await cameraKit.createSession({ liveRenderTarget });
-  const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
-  await session.setSource(mediaStream, {
-    cameraType: "user"
-  });
-  
+   const session = await cameraKit.createSession({ liveRenderTarget });
+  await session.setSource(source);
   await session.play();
 
   const lens = await cameraKit.lensRepository.loadLens(
