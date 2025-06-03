@@ -42,7 +42,7 @@ const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
     liveRenderTarget.style.aspectRatio = 'unset'; // Para evitar conflictos CSS
 
     // Render Size para el source de Camera Kit
-    source.setRenderSize(width, height);
+    
   }
 
   resizeCanvas();
@@ -50,6 +50,7 @@ const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
 
    const session = await cameraKit.createSession({ liveRenderTarget });
   await session.setSource(source);
+  await source.setRenderSize(window.innerWidth, window.innerHeight);
   await session.play();
 
   const lens = await cameraKit.lensRepository.loadLens(
