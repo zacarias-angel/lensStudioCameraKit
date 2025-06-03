@@ -1,4 +1,4 @@
-import { bootstrapCameraKit,createMediaStreamSource, Transform2D } from '@snap/camera-kit';
+import { bootstrapCameraKit,createMediaStreamSource } from '@snap/camera-kit';
 
 (async function () {
   const cameraKit = await bootstrapCameraKit({
@@ -28,29 +28,23 @@ const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
     disableSourceAudio: false,
   });
  function resizeCanvas() {
-    const aspectRatio = 9 / 16;
-    const width = window.innerWidth;
-    const height = width / aspectRatio;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
 
-    // Canvas interno (rendering)
-    liveRenderTarget.width = width;
-    liveRenderTarget.height = height;
+  liveRenderTarget.width = width;
+  liveRenderTarget.height = height;
 
-    // Canvas visual (estilo)
-    liveRenderTarget.style.width = `${width}px`;
-    liveRenderTarget.style.height = `${height}px`;
-    liveRenderTarget.style.aspectRatio = 'unset'; // Para evitar conflictos CSS
-
-    // Render Size para el source de Camera Kit
-    
-  }
+  liveRenderTarget.style.width = `${width}px`;
+  liveRenderTarget.style.height = `${height}px`;
+  liveRenderTarget.style.aspectRatio = 'unset';
+}
 
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
    const session = await cameraKit.createSession({ liveRenderTarget });
   await session.setSource(source);
-    source.setTransform(Transform2D.MirrorX)
+  
   await source.setRenderSize(window.innerWidth, window.innerHeight);
   await session.play();
 
